@@ -239,7 +239,7 @@ def build_model_caso2(data2: dict, scale_fuel_cost: float = 0.001) -> pyo.Concre
         if i == DEPOT or j == DEPOT:
             return pyo.Constraint.Skip
         
-        # Big-M: capacidad máxima del vehículo (más ajustado que suma de todas las demandas)
+        # Big-M: Exactamente la capacidad del vehículo (tight bound)
         M = m.load_cap[v]
         
         demanda_j = demanda[j] if j in CLIENTS else 0
@@ -279,12 +279,13 @@ def build_model_caso2(data2: dict, scale_fuel_cost: float = 0.001) -> pyo.Concre
         
         Formulación con Big-M:
         fuel[v,j] >= fuel[v,i] - consumo(i,j) + refuel[v,j] - M*(1 - x[v,i,j])
-        """
-        if j == DEPOT:
-            return pyo.Constraint.Skip
         
-        # Big-M: 2 veces la capacidad (para permitir recarga completa)
-        M = 2 * m.fuel_cap[v]
+        IMPORTANTE: NO skip cuando j == DEPOT para garantizar combustible suficiente al regresar
+        """
+        # Big-M: Capacidad del tanque + consumo del arco (tighter bound)
+        # Esto permite que la restricción sea más ajustada cuando x[v,i,j]=0
+        consumo = m.dist[i, j] / m.fuel_efficiency
+        M = m.fuel_cap[v] + consumo
         
         consumo = m.dist[i, j] / m.fuel_efficiency
         
@@ -293,10 +294,10 @@ def build_model_caso2(data2: dict, scale_fuel_cost: float = 0.001) -> pyo.Concre
     model.balance_combustible = pyo.Constraint(model.V, model.A, rule=balance_combustible_rule, 
                                               doc="Balance de combustible en arcos")
     
-    # R10: Capacidad máxima de combustible (después de recargar)
+    # R10: Capacidad máxima de combustible
     def capacidad_combustible_rule(m, v, i):
-        """Combustible (después de recargar) no puede exceder capacidad del tanque."""
-        return m.combustible[v, i] + m.recarga[v, i] <= m.fuel_cap[v]
+        """Combustible no puede exceder capacidad del tanque (ya incluye recarga en balance)."""
+        return m.combustible[v, i] <= m.fuel_cap[v]
     
     model.capacidad_combustible = pyo.Constraint(model.V, model.N, rule=capacidad_combustible_rule, 
                                                 doc="Combustible no excede capacidad del tanque")

@@ -1,0 +1,60 @@
+RESULTADOS TEST DE ESCALABILIDAD - CASO 2
+================================================================================
+Fecha: 2025-11-23 16:09:34
+
+
+Escenario: 2 clientes
+  Status: feasible_time_limit
+  Tiempo resolución: 120.37s
+  Objetivo: $6,438,959
+  Gap: 55.01%
+  Variables: 1280
+  Restricciones: 2287
+
+Escenario: 4 clientes
+  Status: feasible_time_limit
+  Tiempo resolución: 120.31s
+  Objetivo: $6,559,001
+  Gap: 78.02%
+  Variables: 1620
+  Restricciones: 2939
+
+Escenario: 6 clientes
+  Status: feasible_time_limit
+  Tiempo resolución: 120.36s
+  Objetivo: $6,579,767
+  Gap: 96.13%
+  Variables: 2000
+  Restricciones: 3671
+
+Escenario: 8 clientes
+  Status: feasible_time_limit
+  Tiempo resolución: 120.40s
+  Objetivo: $13,048,522
+  Gap: 97.96%
+  Variables: 2420
+  Restricciones: 4483
+
+Escenario: 10 clientes
+  Status: feasible_time_limit
+  Tiempo resolución: 120.38s
+  Objetivo: $13,102,159
+  Gap: 97.77%
+  Variables: 2880
+  Restricciones: 5375
+
+Escenario: 12 clientes
+  Status: feasible_time_limit
+  Tiempo resolución: 120.77s
+  Objetivo: $539,079,507
+  Gap: 99.95%
+  Variables: 3380
+  Restricciones: 6347
+
+Escenario: 14 clientes
+  Status: feasible_time_limit
+  Tiempo resolución: 1000.67s
+  Objetivo: $25,936,384
+  Gap: 98.87%
+  Variables: 3920
+  Restricciones: 7399
