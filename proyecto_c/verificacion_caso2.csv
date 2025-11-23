@@ -1,2 +1,0 @@
-VehicleId,DepotId,InitialLoad,InitialFuel,RouteSequence,ClientsServed,DemandsSatisfied,StationsVisited,RefuelAmounts,TotalDistance,TotalTime,FuelCost,TotalCost
-V002,CD01,0.0,188.8,CD01 → C014 → C005 → CD01,"C014, C005","10.0kg, 15.0kg",Ninguna,Ninguna,1413.10,23.55,0.00,6650924.81
