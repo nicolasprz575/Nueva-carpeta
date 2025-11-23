@@ -15,12 +15,14 @@ from pyomo.opt import SolverFactory
 from typing import Dict, List, Tuple, Any
 
 
-def build_model_caso2(data2: dict) -> pyo.ConcreteModel:
+def build_model_caso2(data2: dict, scale_fuel_cost: float = 0.001) -> pyo.ConcreteModel:
     """
     Construye el modelo de optimización MILP para el Caso 2 (CVRP + Combustible).
     
     Args:
         data2: Diccionario con los datos cargados por cargar_datos_caso2()
+        scale_fuel_cost: Factor de escala para costos de combustible (default: 0.001)
+                        Reduce la magnitud de los costos para mejorar condicionamiento
     
     Returns:
         pyo.ConcreteModel: Modelo de Pyomo listo para resolver
@@ -102,18 +104,20 @@ def build_model_caso2(data2: dict) -> pyo.ConcreteModel:
                                      doc="Rendimiento de combustible (km/galón)")
     
     # Precio de combustible en cada nodo (solo aplica para estaciones y depósito)
+    # ESCALADO: multiplicar por scale_fuel_cost para mejorar condicionamiento numérico
     def init_fuel_price(m, i):
         if i in STATIONS:
-            return fuel_price[i]
+            return fuel_price[i] * scale_fuel_cost
         elif i == DEPOT:
             # Precio promedio de estaciones para el depósito
-            return sum(fuel_price.values()) / len(fuel_price)
+            return (sum(fuel_price.values()) / len(fuel_price)) * scale_fuel_cost
         else:
             # Clientes no venden combustible (precio alto para evitar recargas)
-            return 1e6
+            return 1e6 * scale_fuel_cost
     
     model.fuel_price = pyo.Param(model.N, initialize=init_fuel_price, 
-                                 doc="Precio de combustible por galón (COP/gal)")
+                                 doc="Precio de combustible por galón (COP/gal) - ESCALADO")
+    model.fuel_scale = pyo.Param(initialize=1.0/scale_fuel_cost, doc="Factor de reescalado para costos")
     
     model.C_fixed = pyo.Param(initialize=C_fixed, doc="Costo fijo por vehículo (COP)")
     model.C_km = pyo.Param(initialize=C_km, doc="Costo variable por km (COP/km)")
@@ -235,8 +239,8 @@ def build_model_caso2(data2: dict) -> pyo.ConcreteModel:
         if i == DEPOT or j == DEPOT:
             return pyo.Constraint.Skip
         
-        # Big-M: suma de todas las demandas (cota superior de carga)
-        M = sum(demanda[c] for c in m.C)
+        # Big-M: capacidad máxima del vehículo (más ajustado que suma de todas las demandas)
+        M = m.load_cap[v]
         
         demanda_j = demanda[j] if j in CLIENTS else 0
         
@@ -279,8 +283,8 @@ def build_model_caso2(data2: dict) -> pyo.ConcreteModel:
         if j == DEPOT:
             return pyo.Constraint.Skip
         
-        # Big-M: capacidad máxima de combustible
-        M = m.fuel_cap[v]
+        # Big-M: 2 veces la capacidad (para permitir recarga completa)
+        M = 2 * m.fuel_cap[v]
         
         consumo = m.dist[i, j] / m.fuel_efficiency
         
@@ -438,7 +442,9 @@ def extraer_solucion_caso2(model: pyo.ConcreteModel, data2: dict) -> dict:
                          for v in VEHICLES 
                          for (i, j) in model.A)
     
-    costo_combustible = sum(pyo.value(model.fuel_price[i] * model.recarga[v, i]) 
+    # IMPORTANTE: Reescalar costos de combustible al valor original
+    fuel_scale = pyo.value(model.fuel_scale)
+    costo_combustible = sum(pyo.value(model.fuel_price[i] * model.recarga[v, i]) * fuel_scale
                            for v in VEHICLES 
                            for i in NODES)
     

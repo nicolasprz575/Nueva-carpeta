@@ -460,8 +460,19 @@ def main():
     print("=" * 80)
     
     try:
-        model = build_model_caso2(data2)
+        # Construir modelo con escala de costos optimizada
+        print(f"\n⚙️  Escalando costos de combustible para mejor condicionamiento numérico...")
+        model = build_model_caso2(data2, scale_fuel_cost=0.001)  # Dividir costos por 1000
         print(f"\n✓ Modelo construido exitosamente")
+        
+        # Mostrar estadísticas del modelo
+        num_vars = sum(1 for _ in model.component_data_objects(pyo.Var, active=True))
+        num_constraints = sum(1 for _ in model.component_data_objects(pyo.Constraint, active=True))
+        num_binary = sum(1 for v in model.component_data_objects(pyo.Var, active=True) 
+                        if v.is_binary())
+        print(f"  - Variables totales: {num_vars:,}")
+        print(f"  - Variables binarias: {num_binary:,}")
+        print(f"  - Restricciones: {num_constraints:,}")
     except Exception as e:
         print(f"\n❌ ERROR al construir modelo: {e}")
         sys.exit(1)
@@ -490,8 +501,8 @@ def main():
             sys.exit(1)
     
     # Configurar opciones del solver
-    tiempo_limite = 300  # segundos (5 minutos)
-    gap_optimalidad = 0.10  # 10%
+    tiempo_limite = 180  # segundos (3 minutos - ajustado por complejidad del Caso 2)
+    gap_optimalidad = 0.10  # 10% (más tolerante que Caso 1)
     
     if solver_name == 'highs':
         solver.options['time_limit'] = tiempo_limite
@@ -509,7 +520,7 @@ def main():
     print(f"\n🔄 Resolviendo... (esto puede tomar varios minutos)")
     
     try:
-        results = solver.solve(model, tee=True)
+        results = solver.solve(model, tee=True, load_solutions=False)
     except Exception as e:
         print(f"\n❌ ERROR durante la resolución: {e}")
         sys.exit(1)
@@ -526,11 +537,34 @@ def main():
     
     if termination == pyo.TerminationCondition.optimal:
         print("\n✅ Solución ÓPTIMA encontrada")
+        model.solutions.load_from(results)
     elif termination == pyo.TerminationCondition.feasible:
         print("\n✅ Solución FACTIBLE encontrada (puede no ser óptima)")
+        model.solutions.load_from(results)
+    elif termination == pyo.TerminationCondition.maxTimeLimit:
+        # Revisar si hay solución incumbent
+        if hasattr(results, 'problem') and hasattr(results.problem, 'upper_bound'):
+            if results.problem.upper_bound < float('inf'):
+                print("\n⚠️  Límite de tiempo alcanzado, pero hay solución factible")
+                model.solutions.load_from(results)
+            else:
+                print(f"\n❌ ERROR: Límite de tiempo alcanzado sin solución factible")
+                print(f"   El problema puede ser infactible o necesita más tiempo/simplificación")
+                print(f"\n💡 SUGERENCIAS:")
+                print(f"   1. Aumentar tiempo_limite en run_caso2.py")
+                print(f"   2. Reducir número de nodos (menos clientes o estaciones)")
+                print(f"   3. Revisar restricciones de combustible (FuelCap, consumo, Big-M)")
+                sys.exit(1)
+        else:
+            print(f"\n❌ ERROR: Límite de tiempo alcanzado sin solución factible")
+            sys.exit(1)
     else:
         print(f"\n❌ ERROR: {termination}")
         print("   No se encontró una solución factible")
+        print(f"\n💡 SUGERENCIAS:")
+        print(f"   - Revisar restricciones de combustible")
+        print(f"   - Verificar parámetros: FuelCap, fuel_efficiency, Big-M")
+        print(f"   - Probar con instancia más pequeña")
         sys.exit(1)
     
     # Mostrar valor objetivo
