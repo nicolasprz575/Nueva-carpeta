@@ -1,0 +1,7 @@
+VehicleID,StandardizedID,Type,Capacity,Range
+1,V001,Large Truck,80.0,1720
+2,V002,Medium Truck,60.0,1510
+3,V003,Medium Truck,50.0,1300
+4,V004,Small Truck,40.0,1500
+5,V005,Small Truck,30.0,870
+6,V006,Mini Truck,10.0,1200

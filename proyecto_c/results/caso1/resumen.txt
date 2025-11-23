@@ -1,0 +1,49 @@
+======================================================================
+RESUMEN DE SOLUCIÓN - CASO 1 (PROYECTO C)
+======================================================================
+
+Fecha de ejecución: 2025-11-23 00:08:45
+Solver utilizado: APPSI_HIGHS
+
+----------------------------------------------------------------------
+MÉTRICAS GLOBALES
+----------------------------------------------------------------------
+Costo total: 1,523,781.15 COP
+  - Costo fijo: 900,000.00 COP
+  - Costo distancia: 623,781.15 COP
+Vehículos usados: 3 de 8
+Distancia total: 207.93 km
+Clientes atendidos: 24 de 24
+
+----------------------------------------------------------------------
+DETALLE DE RUTAS
+----------------------------------------------------------------------
+
+Vehículo: V001
+  Ruta: CD01-C001-C004-C015-C022-C017-C003-C014-C023-CD01
+  Clientes atendidos: 8
+  Distancia: 43.46 km
+  Demanda: 130.0 kg
+  Utilización capacidad: 100.0%
+  Utilización autonomía: 25.6%
+  Costo: 430,367.31 COP
+
+Vehículo: V002
+  Ruta: CD01-C010-C024-C016-C007-C021-C002-C008-C011-C013-CD01
+  Clientes atendidos: 9
+  Distancia: 103.05 km
+  Demanda: 140.0 kg
+  Utilización capacidad: 100.0%
+  Utilización autonomía: 51.5%
+  Costo: 609,164.33 COP
+
+Vehículo: V008
+  Ruta: CD01-C019-C020-C012-C009-C005-C018-C006-CD01
+  Clientes atendidos: 7
+  Distancia: 61.42 km
+  Demanda: 107.0 kg
+  Utilización capacidad: 93.9%
+  Utilización autonomía: 43.9%
+  Costo: 484,249.51 COP
+
+======================================================================

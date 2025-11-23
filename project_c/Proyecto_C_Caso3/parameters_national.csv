@@ -1,0 +1,13 @@
+Parameter,Value,Unit,Description
+C_fixed,80000,COP/vehicle,Fixed activation cost (tractomula)
+C_dist,4500,COP/km,Long-haul maintenance cost per km
+C_time,9000,COP/hour,Specialized truck driver hourly cost
+fuel_efficiency_empty_min,11,km/gallon,Empty tractomula minimum efficiency
+fuel_efficiency_empty_max,13,km/gallon,Empty tractomula maximum efficiency
+fuel_efficiency_medium_min,9.5,km/gallon,Medium load (50%) minimum efficiency
+fuel_efficiency_medium_max,11.5,km/gallon,Medium load (50%) maximum efficiency
+fuel_efficiency_full_min,8,km/gallon,Full load minimum efficiency (recommended for calculations)
+fuel_efficiency_full_max,10,km/gallon,Full load maximum efficiency (recommended for calculations)
+# NOTE: Fuel prices are VARIABLE per station - see stations.csv FuelCost column
+# NOTE: Toll costs are VARIABLE - see tolls.csv for BaseRate and RatePerTon columns
+# NOTE: Weight restrictions per municipality - see clients.csv MaxWeight column

@@ -1,0 +1,15 @@
+ClientID,StandardizedID,City/Municipality,Demand,LocationID
+1,C001,Bogotá,30.0,2
+2,C002,Medellín,25.0,3
+3,C003,Cali,22.0,4
+4,C004,Cartagena,18.0,5
+5,C005,Cúcuta,15.0,6
+6,C006,Bucaramanga,17.0,7
+7,C007,Pereira,12.0,8
+8,C008,Santa Marta,10.0,9
+9,C009,Ibagué,11.0,10
+10,C010,Manizales,9.0,11
+11,C011,Neiva,10.0,12
+12,C012,Barranquilla,7.0,13
+13,C013,Villavicencio,8.0,14
+14,C014,Armenia,10.0,15
